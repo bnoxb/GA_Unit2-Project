@@ -122,23 +122,29 @@ router.get('/:id', async (req, res, next) => {
 
 router.put('/:id', upload.single('imageFile'), async (req, res, next) => {
   try {
+    console.log(req.body);
     const foundProject = await Project.findById(req.params.id);
     const foundUser = await User.findById(req.session.userId);
     foundProject.text.push(req.body.text);
+// I AM HERE = ROBERTO
+    //creates image file for 
+    if(req.file){
+      const imagePost = new Image;
+      const imageFilepath = '../uploads/' + req.file.filename;
+      imagePost.title = req.body.title;
+      imagePost.image.data = fs.readFileSync(imageFilepath);
+      imagePost.image.contentType = req.file.mimetype;
+      await imagePost.save();
 
-    //creates image file for upload
-    const imagePost = new Image;
-    const imageFilepath = '../uploads/' + req.file.filename;
-    imagePost.title = req.body.title;
-    imagePost.image.data = fs.readFileSync(imageFilepath);
-    imagePost.image.contentType = req.file.mimetype;
-    await imagePost.save();
+       //add the image to the project too!
+      foundProject.images.push(imagePost);
+      foundProject.save();
+      fs.unlinkSync(imageFilepath); 
+    }
+    
 
-    //add the image to the project too!
-    foundProject.images.push(imagePost);
-    foundProject.save();
-
-    fs.unlinkSync(imageFilepath); 
+   
+    
     
     res.render('project/new-content.ejs', {
       project: foundProject,
@@ -250,11 +256,16 @@ router.post('/:id/edit-target', async (req, res, next) => {
 //update route
 
 router.put('/:id/update', upload.single('imageFile'), async (req, res, next) => {
+  console.log('req.body is: ', req.body);
+
   try {
     const foundProject = await Project.findById(req.body.proj_id);
     const foundUser = await User.findById(req.session.userId);
     //uses splice to insert new text in location of old
     foundProject.text.splice(req.body.index, 1, req.body.text);
+
+// I AM HERE - ROBERTO
+    if(req.file){
 
     //multer related code for creating and storing new photo
     const imagePost = new Image;
@@ -269,7 +280,7 @@ router.put('/:id/update', upload.single('imageFile'), async (req, res, next) => 
     foundProject.save();
 
     fs.unlinkSync(imageFilepath); 
-
+    }
     res.render('project/new-content.ejs', {
       project: foundProject, 
       userBarId: req.session.loggedIn ? `/user/${req.session.userId}` : '/user/login'

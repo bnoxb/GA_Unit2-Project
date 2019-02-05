@@ -30,8 +30,15 @@
           </div>
           <div class="col-10 nc-inputs d-flex">
             <form action="/project/<%=project._id%>/update?_method=PUT" method="POST" enctype="multipart/form-data">
+            
+            <% if (project.images.length > 0) {%>
               title: <input type="text" name="title" value="<%=project.images[arrId].title%>"><br />
               file: <input type="file" name="imageFile" value="<%=project.images[arrId].image.data%>"><br />
+            <%} else {%>
+              title: <input type="text" name="title"><br />
+              file: <input type="file" name="imageFile"><br />
+
+            <%}%>
               <br><br>
               <textarea rows="5" cols="60" name="text"><%=project.text[arrId]%></textarea><br><br>
               <input type="hidden" name="index" value="<%=arrId%>">

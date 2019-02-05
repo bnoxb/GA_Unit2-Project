@@ -60,7 +60,9 @@
           <div class="preview-content-inner">
 
             <% for (let i = 0; i < project.text.length; i++) { -%>
-              <p><img src="/project/img/<%=project.images[i]._id%>" /></p>
+              <% if (project.images.length > 0){%>
+                  <p><img src="/project/img/<%=project.images[i]._id%>" /></p>
+              <%}%>
               <br>
               <p><%=project.text[i]%></p>
               <form action="/project/<%=project._id%>/edit-target" method="POST">
